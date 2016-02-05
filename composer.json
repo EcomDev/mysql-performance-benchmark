@@ -1,0 +1,48 @@
+{
+    "name": "ecomdev/benchmark-database",
+    "description": "Magento 2 Performance Database",
+    "license": "OSL-3.0",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://repo.magento.com/"
+        }
+    ],
+    "require": {
+        "magento/framework": "*",
+        "zendframework/zend-stdlib": "~2.4.6",
+        "zendframework/zend-code": "~2.4.6",
+        "zendframework/zend-server": "~2.4.6",
+        "zendframework/zend-soap": "~2.4.6",
+        "zendframework/zend-uri": "~2.4.6",
+        "zendframework/zend-validator": "~2.4.6",
+        "zendframework/zend-crypt": "~2.4.6",
+        "zendframework/zend-console": "~2.4.6",
+        "zendframework/zend-modulemanager": "~2.4.6",
+        "zendframework/zend-mvc": "~2.4.6",
+        "zendframework/zend-text": "~2.4.6",
+        "zendframework/zend-i18n": "~2.4.6",
+        "zendframework/zend-eventmanager": "~2.4.6",
+        "zendframework/zend-view": "~2.4.6",
+        "zendframework/zend-servicemanager": "~2.4.6",
+        "zendframework/zend-json": "~2.4.6",
+        "zendframework/zend-config": "~2.4.6",
+        "zendframework/zend-form": "~2.4.6",
+        "zendframework/zend-di": "~2.4.6",
+        "zendframework/zend-serializer": "~2.4.6",
+        "zendframework/zend-log": "~2.4.6",
+        "zendframework/zend-http": "~2.4.6",
+        "magento/zendframework1": "1.12.16",
+        "symfony/console": "^3.0",
+        "fzaninotto/faker": "^1.5",
+        "league/csv": "^8.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Cm_Cache_Backend_": "lib/"
+        },
+        "psr-4": {
+            "EcomDev\\MagentoPerformance\\": "src/EcomDev/MagentoPerformance"
+        }
+    }
+}

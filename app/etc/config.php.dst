@@ -1,0 +1,23 @@
+<?php
+
+return [
+    'db' => [
+        'connection' => [
+            'default' => [
+                'host' => 'localhost',
+                'username' => '',
+                'password' => '',
+                'dbname' => '',
+                'model' => 'mysql4',
+                'initStatements' => 'SET NAMES utf8;',
+                'active' => 1
+            ]
+        ],
+        'table_prefix' => ''
+    ],
+    'resource' => [
+        'default_setup' => [
+            'connection' => 'default'
+        ]
+    ]
+];

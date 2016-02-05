@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+
+use EcomDev\MagentoPerformance\Console\ApplicationBuilder;
+
+$bootstrap = (require dirname(__DIR__) . '/app/bootstrap.php');
+
+$application = $bootstrap->getObjectManager()->get(ApplicationBuilder::class)->createApplication();
+$application->run();
