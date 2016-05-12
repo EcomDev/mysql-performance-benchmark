@@ -114,10 +114,17 @@ abstract class AbstractBenchmark extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->provider->validateDatabase(
-            sprintf('%s_%d', $input->getOption('database-prefix'), $input->getArgument('database-size'))
-        );
+        $this->configureProvider($input, $output);
 
+        if ($input->getOption('database-prefix')) {
+            $this->provider->validateDatabase(
+                sprintf('%s_%s', $input->getOption('database-prefix'), $input->getArgument('database-size'))
+            );
+        } else {
+            $this->provider->validateDatabase(
+                sprintf('%s', $input->getArgument('database-size'))
+            );
+        }
 
         $this->provider->setAttributeCodes($input->getOption('attribute-code'));
         $this->provider->setScopeCode($input->getOption('scope'));
@@ -135,8 +142,7 @@ abstract class AbstractBenchmark extends Command
             $this->benchmark->addSampleConfig($size, $size, $maxBoundary, $input->getOption('run-count'));
         }
 
-        $this->configureProvider($input, $output);
-
+        $this->provider->setup();
         $this->benchmark->execute();
         $this->provider->cleanup();
 

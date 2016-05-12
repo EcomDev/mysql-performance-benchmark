@@ -14,10 +14,11 @@ class ApplicationBuilder
 
     private $commandClasses = [
         Command\DatabaseCreate::class,
-        Command\BenchmarkJoin::class,
+        Command\BenchmarkQuery::class,
         Command\BenchmarkFlat::class,
+        Command\BenchmarkFlatData::class,
         Command\BenchmarkLimit::class,
-        Command\BenchmarkIn::class
+        Command\BenchmarkExport::class
     ];
 
     public function __construct(ObjectManagerInterface $objectManager)

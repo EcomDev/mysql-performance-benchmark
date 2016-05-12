@@ -32,10 +32,22 @@ class DatabaseSetup extends AbstractDb
             ->populateTableDataArray();
     }
 
+    public function start()
+    {
+        $this->getConnection()->startSetup();
+        return $this;
+    }
+
+    public function end()
+    {
+        $this->getConnection()->endSetup();
+        return $this;
+    }
+
     public function createSchema($databaseName)
     {
+        $this->start();
         $connection = $this->getConnection();
-        $connection->startSetup();
         $connection->query(
             sprintf('DROP DATABASE IF EXISTS %s', $this->getConnection()->quoteIdentifier($databaseName))
         );
@@ -46,12 +58,27 @@ class DatabaseSetup extends AbstractDb
             sprintf('USE %s', $this->getConnection()->quoteIdentifier($databaseName))
         );
 
+        $this->createTables($this->tableStructure);
+
+        $connection->beginTransaction();
+
+        foreach ($this->tableData as $table => $rows) {
+            $connection->insertOnDuplicate($table, $rows);
+        }
+
+        $connection->commit();
+        $this->end();
+    }
+
+    public function createTables($tableStructure)
+    {
+        $connection = $this->getConnection();
         $defaultInfo = ['columns' => [], 'indexes' => [], 'constraints' => []];
         $defaultColumn = [Table::TYPE_INTEGER, null, []];
         $defaultIndex = [1 => self::IDX_INDEX];
         $defaultFk = [3 => self::FK_CASCADE];
 
-        foreach ($this->tableStructure as $tableName => $info) {
+        foreach ($tableStructure as $tableName => $info) {
             $info += $defaultInfo;
             $table = $this->getConnection()->newTable($tableName);
             foreach ($info['columns'] as $columnName => $column) {
@@ -77,14 +104,7 @@ class DatabaseSetup extends AbstractDb
             $connection->createTable($table);
         }
 
-        $connection->beginTransaction();
-
-        foreach ($this->tableData as $table => $rows) {
-            $connection->insertOnDuplicate($table, $rows);
-        }
-
-        $connection->commit();
-        $connection->endSetup();
+        return $this;
     }
 
     /**

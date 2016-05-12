@@ -7,12 +7,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class BenchmarkIn extends AbstractBenchmark
+class BenchmarkExport extends AbstractBenchmark
 {
     protected function configureName()
     {
-        $this->setName('benchmark:in');
-        $this->setDescription('Benchmarks different solution for in conditions in MySQL.');
+        $this->setName('benchmark:export');
+        $this->setDescription('Benchmarks different solution for in conditions in MySQL for exporting large amount of data');
         $this->addOption('random', 'r', InputOption::VALUE_NONE, 'Should be used random processing');
     }
 

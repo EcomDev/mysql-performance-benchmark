@@ -75,13 +75,23 @@ abstract class AbstractProvider
     }
 
     /**
+     * Returns time of all executed queries
+     *
+     * @return int
+     */
+    public function getQueryTime()
+    {
+        return $this->queryTime;
+    }
+
+    /**
      * Returns main select
      *
      * @param string $alias
      * @return Select
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function getMainSelect($alias = 'main')
+    public function getMainSelect($alias = 'main')
     {
         $select = $this->getConnection()->select();
         $select->from([$alias => $this->getMainTable()], []);
@@ -96,7 +106,7 @@ abstract class AbstractProvider
      * @param string $tableAlias
      * @return $this
      */
-    protected function joinAttribute(Select $select, $attribute, $tableAlias = 'main')
+    public function joinAttribute(Select $select, $attribute, $tableAlias = 'main')
     {
         $defaultAlias = sprintf('attribute_%s_default', $attribute->code);
         $scopeAlias = sprintf('attribute_%s_scope', $attribute->code);
@@ -158,7 +168,7 @@ abstract class AbstractProvider
      * @param string[]|mixed[] $conditions
      * @return string
      */
-    protected function andCondition($conditions)
+    public function andCondition($conditions)
     {
         $and = [];
         foreach ($conditions as $condition => $placeholder) {
@@ -182,7 +192,7 @@ abstract class AbstractProvider
      * @param null|int|int[] $attributeId
      * @return Select
      */
-    protected function getAttributeSelect($type, $alias = 'attribute', $attributeId = null, $ignoreScope = false)
+    public function getAttributeSelect($type, $alias = 'attribute', $attributeId = null, $ignoreScope = false)
     {
         $select = $this->getConnection()->select();
         $select
@@ -199,7 +209,9 @@ abstract class AbstractProvider
 
         if ($this->scopeCode && !$ignoreScope) {
             $select->where(sprintf('%s.scope_id IN(?)', $alias), [0, $this->scope->getId($this->scopeCode)]);
-            $select->order('scope_id');
+            $select->columns([
+                'scope_id',
+            ], $alias);
         }
 
         if (isset($attributeId) && is_array($attributeId)) {
@@ -216,7 +228,7 @@ abstract class AbstractProvider
         return $this;
     }
 
-    protected function limitFlatActive(Select $select, $alias = 'main')
+    public function limitFlatActive(Select $select, $alias = 'main')
     {
         $select->join(['flat' => $this->getTable('entity_flat')], $alias . '.entity_id = flat.entity_id', []);
         $select->where('flat.scope_id = ?', $this->scope->getId($this->scopeCode));
@@ -266,17 +278,28 @@ abstract class AbstractProvider
     }
 
     /**
+     * Requested attribute codes
+     *
+     * @return string[]
+     */
+    public function getAttributeCodes()
+    {
+        return $this->attributeCodes;
+    }
+
+    /**
      * Returns a limit sample
      *
+     * @param mixed[] $additionalArgs
      * @return \Closure
      */
-    protected function getLimitSample()
+    protected function getLimitSample($additionalArgs = [])
     {
-        return function ($size, $maximumBoundary, $runCount) {
+        return function ($size, $maximumBoundary, $runCount) use ($additionalArgs) {
             $step = 0;
             $samples = [];
             while ($runCount > $step && $maximumBoundary > ($size * $step)) {
-                $samples[] = [$size * $step, $size];
+                $samples[] = array_merge([$size * $step, $size], $additionalArgs);
                 $step ++;
             }
 
@@ -306,6 +329,13 @@ abstract class AbstractProvider
     public function getQueries()
     {
         return $this->queries;
+    }
+
+    public function select()
+    {
+        return new \EcomDev\MagentoPerformance\ResourceModel\Select(
+            $this->getConnection()
+        );
     }
 
     public function setup()
@@ -340,4 +370,26 @@ abstract class AbstractProvider
 
         return $this->option[$name];
     }
+
+    /**
+     * @param string $queryCode
+     * @return $this
+     */
+    public function setQueryCode($queryCode)
+    {
+        $this->queryCode = $queryCode;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQueryCode()
+    {
+        return $this->queryCode;
+    }
+    
+    
+    
+
 }

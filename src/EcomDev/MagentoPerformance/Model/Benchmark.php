@@ -91,6 +91,11 @@ class Benchmark
         foreach ($this->operation as $operationCode => $operation) {
             foreach ($samples as list($sampleCode, $sample)) {
                 $startTime = microtime(true);
+
+                if ($operation instanceof SampleCodeAwareInterface) {
+                    $operation->setSampleCode($operationCode . '_' . $sampleCode);
+                }
+                
                 $callTime = call_user_func_array($operation, $sample);
                 $totalTime = microtime(true) - $startTime;
                 $times = [

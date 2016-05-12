@@ -252,9 +252,9 @@
 
     <type name="EcomDev\MagentoPerformance\Model\Benchmark" shared="false" />
 
-    <type name="EcomDev\MagentoPerformance\Console\Command\BenchmarkJoin">
+    <type name="EcomDev\MagentoPerformance\Console\Command\BenchmarkQuery">
         <arguments>
-            <argument name="provider" xsi:type="object">EcomDev\MagentoPerformance\ResourceModel\Benchmark\Join</argument>
+            <argument name="provider" xsi:type="object">EcomDev\MagentoPerformance\ResourceModel\Benchmark\Query</argument>
         </arguments>
     </type>
 
@@ -270,9 +270,15 @@
         </arguments>
     </type>
 
-    <type name="EcomDev\MagentoPerformance\Console\Command\BenchmarkIn">
+    <type name="EcomDev\MagentoPerformance\Console\Command\BenchmarkFlatData">
         <arguments>
-            <argument name="provider" xsi:type="object">EcomDev\MagentoPerformance\ResourceModel\Benchmark\In</argument>
+            <argument name="provider" xsi:type="object">EcomDev\MagentoPerformance\ResourceModel\Benchmark\FlatData</argument>
+        </arguments>
+    </type>
+
+    <type name="EcomDev\MagentoPerformance\Console\Command\BenchmarkExport">
+        <arguments>
+            <argument name="provider" xsi:type="object">EcomDev\MagentoPerformance\ResourceModel\Benchmark\Export</argument>
         </arguments>
     </type>
 </config>
