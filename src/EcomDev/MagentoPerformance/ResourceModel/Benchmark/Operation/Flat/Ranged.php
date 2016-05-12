@@ -34,26 +34,33 @@ class Ranged extends AbstractOperation
         $select->columns(['min'=>'MIN(entity_id)', 'max' => 'MAX(entity_id)']);
         $limits = $select->query()->fetch();
 
-        $rangedIterator = new RangeIterator($limits['min'], $limits['max'], 20000);
+        $rangedIterator = new RangeIterator($limits['min'], $limits['max'], 10000);
+        $allAdditionalColumns = array_diff_key($columns, ['entity_id' => true, 'store_id' => true]);
+        $dataTables = [];
+
+        foreach (array_chunk($allAdditionalColumns, self::JOIN_LIMIT / 2, true) as $tableIndex => $additionalColumns) {
+            $dataTables[$tableIndex] = $this->createCombinedTable(['entity_id' => true, 'store_id' => true], $additionalColumns, $columns, true);
+        }
 
         foreach ($rangedIterator as $from => $to) {
-            $this->generateRange($scopeId, $from, $to, $attributes, $columns);
+            $this->generateRange($scopeId, $from, $to, $attributes, $columns, $allAdditionalColumns, $dataTables);
         }
+
+        $this->dropTable($dataTables);
     }
 
-    private function generateRange($scopeId, $from, $to, $attributes, $columns)
+    private function generateRange($scopeId, $from, $to, $attributes, $columns, $allAdditionalColumns, $dataTables)
     {
         $mainColumns = [
             'entity_id' => 'entity_id',
             'scope_id' => new \Zend_Db_Expr($this->quote($scopeId))
         ];
 
-        $allAdditionalColumns = array_diff_key($columns, $mainColumns);
-        $dataTables = [];
+        foreach (array_chunk($allAdditionalColumns, self::JOIN_LIMIT / 2, true) as $tableIndex => $additionalColumns) {
+            $dataTable = $dataTables[$tableIndex];
 
-        foreach (array_chunk($allAdditionalColumns, self::JOIN_LIMIT / 2, true) as $additionalColumns) {
-            $dataTable = $this->createCombinedTable($mainColumns, $additionalColumns, $columns);
-            $select = $this->provider->getMainSelect('main')
+            $select = $this->select()->from(['main' => $this->getTable('entity')], [])
+                ->order('main.entity_id')
                 ->where('main.entity_id >= ?', $from)
                 ->where('main.entity_id < ?', $to);
 
@@ -98,6 +105,7 @@ class Ranged extends AbstractOperation
 
             $select->columns($selectColumns);
 
+            $this->getConnection()->truncateTable($dataTable->getName());
             $this->profiledQuery(
                 $this->getConnection()->insertFromSelect(
                     $select,
@@ -105,8 +113,6 @@ class Ranged extends AbstractOperation
                     array_keys($selectColumns)
                 )
             );
-
-            $dataTables[] = $dataTable;
         }
 
 
@@ -149,6 +155,5 @@ class Ranged extends AbstractOperation
             )
         );
 
-        $this->dropTable($dataTables);
     }
 }

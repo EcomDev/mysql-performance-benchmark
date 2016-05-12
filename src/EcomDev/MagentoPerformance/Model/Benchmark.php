@@ -66,7 +66,7 @@ class Benchmark
      *
      * @return $this
      */
-    public function execute()
+    public function execute(\Closure $reset = null)
     {
         if (!isset($this->sampleProvider)) {
             throw new \RuntimeException('Sample provider is not specified');
@@ -89,6 +89,10 @@ class Benchmark
 
 
         foreach ($this->operation as $operationCode => $operation) {
+            if ($reset) {
+               $reset();
+            }
+
             foreach ($samples as list($sampleCode, $sample)) {
                 $startTime = microtime(true);
 

@@ -7,22 +7,21 @@ use EcomDev\MagentoPerformance\ResourceModel\Benchmark\Operation\Flat as FlatOpe
 class Flat
     extends AbstractProvider
 {
-    protected $batchSize = 20000;
 
     public function getOperations()
     {
         return [
-            'flat_ranged' => function ($scopeId)  {
-                return $this->executeOperation(
-                    new FlatOperation\Ranged($this, 'entity_flat'),
-                    'flat_ranged',
-                    $scopeId
-                );
-            },
             'flat_regular' => function ($scopeId) {
                 return $this->executeOperation(
                     new FlatOperation\Regular($this, 'entity_flat'),
                     'flat_regular',
+                    $scopeId
+                );
+            },
+            'flat_ranged' => function ($scopeId)  {
+                return $this->executeOperation(
+                    new FlatOperation\Ranged($this, 'entity_flat'),
+                    'flat_ranged',
                     $scopeId
                 );
             }

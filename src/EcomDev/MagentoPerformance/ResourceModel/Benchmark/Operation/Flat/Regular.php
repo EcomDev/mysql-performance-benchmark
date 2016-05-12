@@ -39,7 +39,8 @@ class Regular extends AbstractOperation
 
         foreach (array_chunk($allAdditionalColumns, self::JOIN_LIMIT / 2, true) as $additionalColumns) {
             $dataTable = $this->createCombinedTable($mainColumns, $additionalColumns, $columns);
-            $select = $this->provider->getMainSelect('main');
+            $select = $this->select()->from(['main' => $this->getTable('entity')], [])
+			->order('main.entity_id');
 
             $selectColumns = $mainColumns;
 

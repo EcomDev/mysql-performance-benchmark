@@ -94,17 +94,17 @@ class FlatData
     public function getOperations()
     {
         return [
-            'flat_ranged' => function ($scopeId)  {
-                return $this->executeOperation(
-                    new FlatOperation\Ranged($this, 'entity_flat_data'),
-                    'flat_data_ranged',
-                    $scopeId
-                );
-            },
             'flat_regular' => function ($scopeId) {
                 return $this->executeOperation(
                     new FlatOperation\Regular($this, 'entity_flat_data'),
                     'flat_data_regular',
+                    $scopeId
+                );
+            },
+            'flat_ranged' => function ($scopeId)  {
+                return $this->executeOperation(
+                    new FlatOperation\Ranged($this, 'entity_flat_data'),
+                    'flat_data_ranged',
                     $scopeId
                 );
             }

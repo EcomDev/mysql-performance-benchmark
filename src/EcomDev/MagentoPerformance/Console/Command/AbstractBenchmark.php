@@ -117,15 +117,12 @@ abstract class AbstractBenchmark extends Command
         $this->configureProvider($input, $output);
 
         if ($input->getOption('database-prefix')) {
-            $this->provider->validateDatabase(
-                sprintf('%s_%s', $input->getOption('database-prefix'), $input->getArgument('database-size'))
-            );
+            $databaseName =  sprintf('%s_%s', $input->getOption('database-prefix'), $input->getArgument('database-size'));
         } else {
-            $this->provider->validateDatabase(
-                sprintf('%s', $input->getArgument('database-size'))
-            );
+            $databaseName =  sprintf('%s_%s', $input->getOption('database-prefix'), $input->getArgument('database-size'));
         }
-
+        $this->provider->validateDatabase($databaseName);
+          
         $this->provider->setAttributeCodes($input->getOption('attribute-code'));
         $this->provider->setScopeCode($input->getOption('scope'));
 
@@ -143,7 +140,14 @@ abstract class AbstractBenchmark extends Command
         }
 
         $this->provider->setup();
-        $this->benchmark->execute();
+        $this->benchmark->execute(function () use ($databaseName) {
+            $this->provider->getConnection()->closeConnection();
+	    shell_exec('sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"');
+            shell_exec('sudo service mysql restart');
+            sleep(2);
+            $this->provider->validateDatabase($databaseName);
+            
+        });
         $this->provider->cleanup();
 
         $this->output($input->getOption('format'), $output, $this->benchmark->report());

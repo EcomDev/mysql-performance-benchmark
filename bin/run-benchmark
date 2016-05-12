@@ -1,0 +1,18 @@
+#!/bin/bash
+
+SCRIPT=$(readlink -f $0)
+SCRIPTPATH=`dirname $SCRIPT`
+
+command="benchmark:$1"
+output=$2
+IFS=',' read -r -a databases <<< "$3"
+IFS=',' read -r -a samples <<< "$4"
+shift 4
+
+for database in "${databases[@]}"
+do
+   echo "Running:"
+   echo $SCRIPTPATH/app $command $database "${samples[@]}" "$@" -o csv ">" $output/$database.csv
+   $SCRIPTPATH/app $command $database "${samples[@]}" "$@" -o csv > $output/$database.csv 
+done
+

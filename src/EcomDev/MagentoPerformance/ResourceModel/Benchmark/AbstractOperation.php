@@ -51,7 +51,7 @@ abstract class AbstractOperation implements SampleCodeAwareInterface
 
     abstract protected function execute($args);
 
-    protected function createCombinedTable($mainColumns, $additionalColumns, $allColumns)
+    protected function createCombinedTable($mainColumns, $additionalColumns, $allColumns, $isMemory = false)
     {
         if (is_int(key($additionalColumns))) {
             $additionalColumns = array_combine($additionalColumns, $additionalColumns);
@@ -60,10 +60,10 @@ abstract class AbstractOperation implements SampleCodeAwareInterface
         $columns = array_intersect_key($allColumns, $mainColumns);
         $columns += array_intersect_key($allColumns, $additionalColumns);
 
-        return $this->createTable($columns);
+        return $this->createTable($columns, $isMemory);
     }
 
-    protected function createTable($columns)
+    protected function createTable($columns, $isMemory = true)
     {
         $table = $this->getConnection()->newTable(uniqid('tmp_table'));
 
@@ -78,7 +78,9 @@ abstract class AbstractOperation implements SampleCodeAwareInterface
             );
         }
 
-        $table->setOption('type', 'MEMORY');
+        if ($isMemory) {
+           $table->setOption('type', 'MEMORY');
+        }
         $this->getConnection()->createTable($table);
         return $table;
     }

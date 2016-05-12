@@ -18,7 +18,9 @@ class ApplicationBuilder
         Command\BenchmarkFlat::class,
         Command\BenchmarkFlatData::class,
         Command\BenchmarkLimit::class,
-        Command\BenchmarkExport::class
+        Command\BenchmarkExport::class,
+        Command\NormalizeBenchmark::class,
+        Command\MergeBenchmark::class
     ];
 
     public function __construct(ObjectManagerInterface $objectManager)
